@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "vite build",
+    "build": "ENTRY=main vite build && ENTRY=admin vite build",
     "dev": "vite build --watch",
     "lint": "eslint src/"
   },
@@ -15,6 +15,7 @@
     "vue": "^3.4.38"
   },
   "devDependencies": {
+    "@nextcloud/vite-config": "^2.5.2",
     "@vitejs/plugin-vue": "^5.1.4",
     "vite": "^5.4.11"
   }
