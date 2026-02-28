@@ -1,0 +1,21 @@
+{
+  "name": "paperless_view",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "@nextcloud/axios": "^2.5.1",
+    "@nextcloud/router": "^3.0.1",
+    "@nextcloud/vue": "^9.5.0",
+    "vue": "^3.4.38"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.1.4",
+    "vite": "^5.4.11"
+  }
+}

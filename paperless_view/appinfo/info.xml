@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+    <id>paperless_view</id>
+    <name>Paperless View</name>
+    <summary>View Paperless-ngx documents inside Nextcloud</summary>
+    <description><![CDATA[Browse, search and preview your Paperless-ngx documents directly from Nextcloud.
+Documents stay on Paperless – only the view is embedded in Nextcloud.
+
+Features:
+- Document grid with thumbnails
+- Full-text search
+- Filter by tags, correspondents, document types
+- Inline PDF preview
+- Download documents
+- Open in Paperless link
+    ]]></description>
+    <version>1.0.0</version>
+    <licence>agpl</licence>
+    <author mail="info@ackermann.media">Ackermann Media</author>
+    <namespace>PaperlessView</namespace>
+    <category>files</category>
+    <bugs>https://github.com/AckermannMedia/nextcloud-paperless-view/issues</bugs>
+    <dependencies>
+        <nextcloud min-version="28" max-version="32"/>
+    </dependencies>
+    <navigations>
+        <navigation>
+            <name>Paperless</name>
+            <route>paperless_view.page.index</route>
+            <icon>app.svg</icon>
+            <order>10</order>
+        </navigation>
+    </navigations>
+    <settings>
+        <admin>OCA\PaperlessView\Settings\Admin</admin>
+        <admin-section>OCA\PaperlessView\Settings\AdminSection</admin-section>
+    </settings>
+</info>
