@@ -30,6 +30,7 @@ class ApiController extends Controller {
 
     /**
      * @NoAdminRequired
+     * @NoCSRFRequired
      */
     public function documents(): JSONResponse {
         if (!$this->paperless->isConfigured()) {
@@ -112,6 +113,7 @@ class ApiController extends Controller {
 
     /**
      * @NoAdminRequired
+     * @NoCSRFRequired
      */
     public function tags(): JSONResponse {
         if (!$this->paperless->isConfigured()) {
@@ -128,6 +130,7 @@ class ApiController extends Controller {
 
     /**
      * @NoAdminRequired
+     * @NoCSRFRequired
      */
     public function correspondents(): JSONResponse {
         if (!$this->paperless->isConfigured()) {
@@ -144,6 +147,7 @@ class ApiController extends Controller {
 
     /**
      * @NoAdminRequired
+     * @NoCSRFRequired
      */
     public function documentTypes(): JSONResponse {
         if (!$this->paperless->isConfigured()) {
@@ -160,6 +164,7 @@ class ApiController extends Controller {
 
     /**
      * @NoAdminRequired
+     * @NoCSRFRequired
      */
     public function search(): JSONResponse {
         if (!$this->paperless->isConfigured()) {
@@ -186,6 +191,7 @@ class ApiController extends Controller {
     }
 
     /**
+     * @NoCSRFRequired
      * Get admin settings (admin only).
      */
     public function getSettings(): JSONResponse {
