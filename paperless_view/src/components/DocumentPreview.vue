@@ -2,7 +2,7 @@
 	<NcModal :show="true"
 		size="large"
 		:title="document.title"
-		@close="$emit('close')">
+		@close="onClose">
 		<div class="preview-container">
 			<div class="preview-header">
 				<div class="preview-info">
@@ -18,23 +18,24 @@
 				</div>
 				<div class="preview-actions">
 					<NcButton type="secondary" @click="$emit('download', document)">
-						<template #icon>
-							<span class="icon-download" />
-						</template>
+						<template #icon><span class="icon-download" /></template>
 						Download
 					</NcButton>
-					<NcButton v-if="paperlessUrl"
-						type="tertiary"
-						:href="paperlessDocUrl"
-						target="_blank">
+					<NcButton v-if="paperlessUrl" type="tertiary" :href="paperlessDocUrl" target="_blank">
 						In Paperless oeffnen
 					</NcButton>
 				</div>
 			</div>
 			<div class="preview-pdf">
-				<iframe :src="pdfUrl"
-					:title="document.title"
-					frameborder="0" />
+				<div v-if="loading" class="preview-loading">
+					<span class="icon-loading" />
+					<p>PDF wird geladen...</p>
+				</div>
+				<div v-else-if="error" class="preview-error">
+					<p>{{ error }}</p>
+					<NcButton type="secondary" @click="loadPdf">Erneut versuchen</NcButton>
+				</div>
+				<iframe v-else-if="blobUrl" :src="blobUrl" :title="document.title" frameborder="0" />
 			</div>
 		</div>
 	</NcModal>
@@ -44,6 +45,7 @@
 import NcModal from '@nextcloud/vue/components/NcModal'
 import NcButton from '@nextcloud/vue/components/NcButton'
 import TagChip from './TagChip.vue'
+import axios from '@nextcloud/axios'
 import { getPreviewUrl } from '../services/api.js'
 
 export default {
@@ -56,10 +58,14 @@ export default {
 		docTypesMap: { type: Object, default: () => ({}) },
 	},
 	emits: ['close', 'download'],
+	data() {
+		return {
+			blobUrl: null,
+			loading: true,
+			error: null,
+		}
+	},
 	computed: {
-		pdfUrl() {
-			return getPreviewUrl(this.document.id)
-		},
 		correspondentName() {
 			if (!this.document.correspondent) return null
 			const c = this.correspondentsMap[this.document.correspondent]
@@ -77,7 +83,6 @@ export default {
 				.filter(Boolean)
 		},
 		paperlessUrl() {
-			// Read from initial state if available, otherwise not shown
 			try {
 				const el = document.getElementById('paperless-view-app')
 				return el?.dataset?.paperlessUrl || null
@@ -90,7 +95,40 @@ export default {
 			return `${this.paperlessUrl}/documents/${this.document.id}/details`
 		},
 	},
+	mounted() {
+		this.loadPdf()
+	},
+	beforeUnmount() {
+		if (this.blobUrl) {
+			URL.revokeObjectURL(this.blobUrl)
+		}
+	},
 	methods: {
+		async loadPdf() {
+			this.loading = true
+			this.error = null
+			try {
+				const response = await axios.get(getPreviewUrl(this.document.id), {
+					responseType: 'arraybuffer',
+				})
+				const blob = new Blob([response.data], { type: 'application/pdf' })
+				if (this.blobUrl) {
+					URL.revokeObjectURL(this.blobUrl)
+				}
+				this.blobUrl = URL.createObjectURL(blob)
+			} catch (e) {
+				this.error = 'PDF konnte nicht geladen werden: ' + (e.message || 'Unbekannter Fehler')
+			} finally {
+				this.loading = false
+			}
+		},
+		onClose() {
+			if (this.blobUrl) {
+				URL.revokeObjectURL(this.blobUrl)
+				this.blobUrl = null
+			}
+			this.$emit('close')
+		},
 		formatDate(dateStr) {
 			if (!dateStr) return ''
 			const d = new Date(dateStr)
@@ -152,11 +190,23 @@ export default {
 	border: 1px solid var(--color-border);
 	border-radius: var(--border-radius);
 	overflow: hidden;
+	position: relative;
 }
 
 .preview-pdf iframe {
 	width: 100%;
 	height: 100%;
 	border: none;
+}
+
+.preview-loading,
+.preview-error {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	gap: 12px;
+	color: var(--color-text-maxcontrast);
 }
 </style>
